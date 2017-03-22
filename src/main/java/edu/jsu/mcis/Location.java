@@ -19,7 +19,9 @@ public class Location {
      * (type COVERED, mine false, hint 0).
      */
     public Location() {
-
+		this.type = COVERED;
+		this.mine = false;
+		this.hint = 0;
     }
     
     /**
@@ -27,30 +29,35 @@ public class Location {
      * (type COVERED, mine false, hint 0).
      */
     public void reset() {
-
+		this.type = COVERED;
+		this.mine = false;
+		this.hint = 0;
     }
     
     public Type getType() { 
-        return Type.COVERED; 
+        //return Type.COVERED;
+		return Type;
     }
     
     public void setType(Type t) { 
-
+		this.type = t;
     }
     
     public boolean hasMine() { 
-        return false; 
+        //return false;
+		return mine;
     }
     
     public void setMine(boolean m) { 
-
+		this.mine = m;
     }
 
     public int getHint() { 
-        return 0; 
+        //return 0;
+		return hint;
     }
     
     public void setHint(int h) { 
-
+		this.hint = h;
     }
 }
