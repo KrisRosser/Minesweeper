@@ -30,30 +30,11 @@ public class Grid extends Observable {
     private Random random;
 
     public Grid() {
-		/*location = new Location[0][0];
-		mines = 0;
-		random = new Random();*/
-		this.random = new Random();
-		location = new Location[8][8];
-		for(int i = 0; i < 8 ; i++){
-			for(int j = 0; j < 8; j++){
-				location[i][j] = new Location();
-			}
-		}
-		this.mines = 10;
-		placeMines();
-		
+		this(8,8,10);		
     }
     
     public Grid(int width, int height, int mines) {
-		random = new Random();
-		location = new Location[width][height];
-		for(int i = 0; i < width; i++){
-			for(int j = 0; j < height; j++){
-				location[i][j] = new Location();
-			}
-		}
-		this.mines = mines;
+		this(width, height, mines, new Random());
     }
     
     /**
@@ -69,9 +50,10 @@ public class Grid extends Observable {
      * @param random the pseudorandom number generator
      */
     public Grid(int width, int height, int mines, Random random) {
-		this(width,height,mines);
 		this.random = random;
-		
+		this.mines = mines;
+		location = new Location[width][height];
+		this.reset();
     }
     
     /**
@@ -82,20 +64,25 @@ public class Grid extends Observable {
      * mines are placed.
      */
     public void reset() {
-		
-    }
+		for(int i = 0; i < location.length; i++){
+			for(int j = 0; j < location[i].length; j++){
+				location[i][j].setType(Location.Type.COVERED);
+			}
+		}
+		this.placeMines();
+		this.placeHints();
+	}
     
     /**
      * This method should place all mines randomly in unique 
      * locations.
      */
     private void placeMines() {
-		if(mines>=1){
-			for(int i = 0; i < mines; i++){
-				location[random.nextInt(location.length)][random.nextInt(location[0].length)].setMine(true);
-			}
+		for(int i = 0; i < mines; i++){
+			int h = random.nextInt(location.length);
+			int w = random.nextInt(location[0].length);
+			if(!(location[w][h].hasMine())) location[w][h].setMine(true);
 		}
-		
     }
     
     /**
@@ -103,7 +90,13 @@ public class Grid extends Observable {
      * adjacent mines.
      */
     private void placeHints() {
-		
+		for(int w = 0; w < location.length; w++){
+			for(int h = 0; h < location[w].length; h++){
+				List<Location> neighbors = getNeighbors(w,h);
+				int hint = calculateHint(neighbors);
+				location[w][h].setHint(hint);
+			}
+		}
     }
     
     /**
@@ -147,7 +140,7 @@ public class Grid extends Observable {
      * @return whether (row, col) is a legal index
      */
     private boolean isLegalIndex(int row, int col) {
-        return false;
+        return ((row > 0 && row < getHeight()) && (col > 0 && col < getWidth()));
     }
     
     /**
@@ -158,20 +151,20 @@ public class Grid extends Observable {
      * @return the hint associated with the list of neighbors
      */
     private int calculateHint(List<Location> neighbors) {
-        int hint = 0;
+        int hint = neighbors.size();
         return hint;
     }
     
     public int getWidth() {
-        return 0;
+        return location[0].length;
     }
     
     public int getHeight() {
-        return 0;
+        return location.length;
     }
     
     public int getMines() {
-        return 0;
+        return mines;
     }
     
     /**
@@ -193,7 +186,8 @@ public class Grid extends Observable {
      * @return the location at (row, col)
      */
     public Location getLocation(int row, int col) {
-        return null;
+        if(isLegalIndex(row, col)) return location[row][col];
+		return null;
     }
     
     /**
