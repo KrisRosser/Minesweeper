@@ -30,11 +30,13 @@ public class Grid extends Observable {
     private Random random;
 
     public Grid() {
-
     }
     
     public Grid(int width, int height, int mines) {
-
+		this.mines = mines;
+		location = new Location[height][width];
+		
+		placeMines();
     }
     
     /**
@@ -50,7 +52,19 @@ public class Grid extends Observable {
      * @param random the pseudorandom number generator
      */
     public Grid(int width, int height, int mines, Random random) {
-
+		random = new Random();
+		this.mines = mines;
+		location = new Location[height][width];
+		
+		for(int i = 0; i < height; i++){
+			for(int j = 0; j < width){
+				location[i][j] = new Location();
+			}
+		}
+		
+		placeMines();
+		placeHints();
+	
     }
     
     /**
@@ -69,7 +83,12 @@ public class Grid extends Observable {
      * locations.
      */
     private void placeMines() {
-
+		random = new Random();
+		while(mines >= 0){
+			location[random.nextInt(getHeight())][random.nextInt(getWidth())].setMine(true);
+			mines--;
+		}
+		
     }
     
     /**
@@ -95,6 +114,16 @@ public class Grid extends Observable {
      */
     private List<Location> getNeighbors(int row, int col) {
         List<Location> neighbors = new ArrayList<>();
+		/*
+		if (row > 0)
+        neighbors.add({row-1, col});
+		if (col > 0)
+			neighbors.add(row, col-1);
+		if (row < getHeight())
+			neighbors.add(row+1, col);
+		if (row < getWidth())
+			neighbors.add(row, col+1);
+		*/
         return neighbors;
     }
     
@@ -106,7 +135,9 @@ public class Grid extends Observable {
      * @return whether (row, col) is a legal index
      */
     private boolean isLegalIndex(int row, int col) {
-        return false;
+		//if(row < 0 || row > getHeight()) return false;
+		//else if(col < 0 || col > getWidth()) return false;
+        return ((row > 0 && row < getHeight()) && (col > 0 && col < getWidth()));
     }
     
     /**
@@ -122,15 +153,15 @@ public class Grid extends Observable {
     }
     
     public int getWidth() {
-        return 0;
+        return location[0].length;
     }
     
     public int getHeight() {
-        return 0;
+        return location.length;
     }
     
     public int getMines() {
-        return 0;
+        return mines;
     }
     
     /**
@@ -152,7 +183,7 @@ public class Grid extends Observable {
      * @return the location at (row, col)
      */
     public Location getLocation(int row, int col) {
-        return null;
+		if(isLegalIndex(row, col) == true) return location[row][col];
     }
     
     /**
