@@ -30,11 +30,30 @@ public class Grid extends Observable {
     private Random random;
 
     public Grid() {
-
+		/*location = new Location[0][0];
+		mines = 0;
+		random = new Random();*/
+		this.random = new Random();
+		location = new Location[8][8];
+		for(int i = 0; i < 8 ; i++){
+			for(int j = 0; j < 8; j++){
+				location[i][j] = new Location();
+			}
+		}
+		this.mines = 10;
+		placeMines();
+		
     }
     
     public Grid(int width, int height, int mines) {
-
+		random = new Random();
+		location = new Location[width][height];
+		for(int i = 0; i < width; i++){
+			for(int j = 0; j < height; j++){
+				location[i][j] = new Location();
+			}
+		}
+		this.mines = mines;
     }
     
     /**
@@ -50,7 +69,9 @@ public class Grid extends Observable {
      * @param random the pseudorandom number generator
      */
     public Grid(int width, int height, int mines, Random random) {
-
+		this(width,height,mines);
+		this.random = random;
+		
     }
     
     /**
@@ -61,7 +82,7 @@ public class Grid extends Observable {
      * mines are placed.
      */
     public void reset() {
-
+		
     }
     
     /**
@@ -69,7 +90,12 @@ public class Grid extends Observable {
      * locations.
      */
     private void placeMines() {
-
+		if(mines>=1){
+			for(int i = 0; i < mines; i++){
+				location[random.nextInt(location.length)][random.nextInt(location[0].length)].setMine(true);
+			}
+		}
+		
     }
     
     /**
@@ -77,7 +103,7 @@ public class Grid extends Observable {
      * adjacent mines.
      */
     private void placeHints() {
-
+		
     }
     
     /**
@@ -95,7 +121,22 @@ public class Grid extends Observable {
      */
     private List<Location> getNeighbors(int row, int col) {
         List<Location> neighbors = new ArrayList<>();
-        return neighbors;
+        
+		if((row > 0 && row < location[0].length) && (col > 0 && col < location.length)){
+			return neighbors;
+		}
+		else{
+			for(int i = -1; i < 2; i++){
+				for(int j = -1; j < 2; j++){
+					if((row+i>0 && row+i < location[0].length) && (col+j > 0 && col+j < location.length)){
+						if(row+i != row && col+j != col){
+							neighbors.add(location[row+i][col+j]);
+						}
+					}
+				}
+			}
+		}
+		return neighbors;
     }
     
     /**
