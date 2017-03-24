@@ -30,8 +30,8 @@ public class Grid extends Observable {
     private Random random;
 
     public Grid() {
-		this(8,8,10);		
-    }
+		this(8,8,10);
+	}
     
     public Grid(int width, int height, int mines) {
 		this(width, height, mines, new Random());
@@ -52,8 +52,14 @@ public class Grid extends Observable {
     public Grid(int width, int height, int mines, Random random) {
 		this.random = random;
 		this.mines = mines;
-		location = new Location[width][height];
-		this.reset();
+		location = new Location[height][width];
+		for(int i = 0; i < location.length; i++){
+			for(int j = 0; j < location[i].length; j++){
+				location[i][j] = new Location();
+			}
+		}
+		this.placeMines();
+		this.placeHints();
     }
     
     /**
@@ -64,9 +70,11 @@ public class Grid extends Observable {
      * mines are placed.
      */
     public void reset() {
+		new Random();
+		location = new Location[getHeight()][getWidth()];
 		for(int i = 0; i < location.length; i++){
 			for(int j = 0; j < location[i].length; j++){
-				location[i][j].setType(Location.Type.COVERED);
+				location[i][j] = new Location();
 			}
 		}
 		this.placeMines();
@@ -79,8 +87,8 @@ public class Grid extends Observable {
      */
     private void placeMines() {
 		for(int i = 0; i < mines; i++){
-			int h = random.nextInt(location.length);
-			int w = random.nextInt(location[0].length);
+			int h = random.nextInt(location.length-1);
+			int w = random.nextInt(location[0].length-1);
 			if(!(location[w][h].hasMine())) location[w][h].setMine(true);
 		}
     }
@@ -186,9 +194,8 @@ public class Grid extends Observable {
      * @return the location at (row, col)
      */
     public Location getLocation(int row, int col) {
-        if(isLegalIndex(row, col)) return location[row][col];
-		return null;
-    }
+        return location[col][row];		
+	}
     
     /**
      * This method returns true if (row, col) is a legal index and
