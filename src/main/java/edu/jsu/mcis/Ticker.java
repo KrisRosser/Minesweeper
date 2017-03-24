@@ -49,10 +49,10 @@ public class Ticker extends JLabel implements ActionListener {
      * This method stops the timer and resets the current time to 0.
      */
     public void reset() {
-		this.seconds = 0;
-		setText(getTime());
 		this.timer.stop();
-		running = false;		
+		this.seconds = 0;
+		running = false;
+		setText(getTime());
     }
     
     public boolean isRunning() {

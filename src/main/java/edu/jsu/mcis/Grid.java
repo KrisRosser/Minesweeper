@@ -52,14 +52,14 @@ public class Grid extends Observable {
     public Grid(int width, int height, int mines, Random random) {
 		this.random = random;
 		this.mines = mines;
-		location = new Location[height][width];
-		for(int i = 0; i < location.length; i++){
-			for(int j = 0; j < location[i].length; j++){
-				location[i][j] = new Location();
+		location = new Location[width][height];
+		for(int i = 0; i < getWidth(); i++){
+			for(int j = 0; j < getHeight(); j++){
+				location[i][j] = new Location();				//Location class comes initialized to COVERED dont have to cover it
 			}
 		}
-		this.placeMines();
-		this.placeHints();
+		placeMines();
+		/*placeHints();*/											//something is wrong with placeHints();
     }
     
     /**
@@ -69,16 +69,16 @@ public class Grid extends Observable {
      * mines are in unique locations. Hints should be calculated after 
      * mines are placed.
      */
-    public void reset() {
+    public void reset() {										//THIS IS FAILING TEST DUE TO WRONG HINT IN LOCATION HAVE TO CHECK 3 METHODS
 		new Random();
 		location = new Location[getHeight()][getWidth()];
 		for(int i = 0; i < location.length; i++){
 			for(int j = 0; j < location[i].length; j++){
-				location[i][j] = new Location();
+				location[i][j] = new Location();		
 			}
 		}
 		this.placeMines();
-		this.placeHints();
+		this.placeHints(); 
 	}
     
     /**
@@ -86,10 +86,14 @@ public class Grid extends Observable {
      * locations.
      */
     private void placeMines() {
-		for(int i = 0; i < mines; i++){
-			int h = random.nextInt(location.length-1);
-			int w = random.nextInt(location[0].length-1);
-			if(!(location[w][h].hasMine())) location[w][h].setMine(true);
+		int mineCount = 0;
+		while(mineCount < mines){						//While loop instead of for.
+			int x = random.nextInt(getWidth());
+			int y = random.nextInt(getHeight());
+			if(!(location[x][y].hasMine())){
+				location[x][y].setMine(true);
+				mineCount++;
+			} 
 		}
     }
     
@@ -98,11 +102,10 @@ public class Grid extends Observable {
      * adjacent mines.
      */
     private void placeHints() {
-		for(int w = 0; w < location.length; w++){
-			for(int h = 0; h < location[w].length; h++){
-				List<Location> neighbors = getNeighbors(w,h);
-				int hint = calculateHint(neighbors);
-				location[w][h].setHint(hint);
+		for(int i = 0; i < getWidth(); i++){
+			for(int j = 0; j < getHeight(); j++){
+			List<Location>neighbors = getNeighbors(i,j);
+				location[i][j].setHint(calculateHint(neighbors));
 			}
 		}
     }
@@ -122,23 +125,24 @@ public class Grid extends Observable {
      */
     private List<Location> getNeighbors(int row, int col) {
         List<Location> neighbors = new ArrayList<>();
-        
-		if((row > 0 && row < location[0].length) && (col > 0 && col < location.length)){
-			return neighbors;
-		}
-		else{
+        //(row < 0 || row > location.length) || (col < 0 || col > location[0].length)
+		//if((row > 0 && row < location[0].length) && (col > 0 && col < location.length))
+		if(isLegalIndex(row, col)){
 			for(int i = -1; i < 2; i++){
 				for(int j = -1; j < 2; j++){
-					if((row+i>0 && row+i < location[0].length) && (col+j > 0 && col+j < location.length)){
+					if(isLegalIndex(row+i, col+j)){			//(row+i >= 0 && row+i < location[0].length) && (col+j >= 0 && col+j < location.length)
 						if(row+i != row && col+j != col){
 							neighbors.add(location[row+i][col+j]);
 						}
 					}
 				}
 			}
+			return neighbors;
 		}
-		return neighbors;
-    }
+		else{
+			return neighbors;
+		}
+	}
     
     /**
      * This method returns true if (row, col) is a legal index.
@@ -148,7 +152,7 @@ public class Grid extends Observable {
      * @return whether (row, col) is a legal index
      */
     private boolean isLegalIndex(int row, int col) {
-        return ((row > 0 && row < getHeight()) && (col > 0 && col < getWidth()));
+        return ((row >= 0 && row < getWidth()) && (col >= 0 && col < getHeight()));
     }
     
     /**
@@ -159,16 +163,21 @@ public class Grid extends Observable {
      * @return the hint associated with the list of neighbors
      */
     private int calculateHint(List<Location> neighbors) {
-        int hint = neighbors.size();
+        int hint = 0;
+		for(int i=0; i < neighbors.size(); i++){			//had to read intstructions lol
+			if(neighbors.get(i).hasMine()){
+				hint++;
+			}
+		}
         return hint;
     }
     
     public int getWidth() {
-        return location[0].length;
+        return location.length;
     }
     
     public int getHeight() {
-        return location.length;
+        return location[0].length;
     }
     
     public int getMines() {
