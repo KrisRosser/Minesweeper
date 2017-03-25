@@ -59,7 +59,7 @@ public class Grid extends Observable {
 			}
 		}
 		placeMines();
-		/*placeHints();*/											//something is wrong with placeHints();
+		placeHints();											//something is wrong with placeHints();
     }
     
     /**
