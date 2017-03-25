@@ -52,9 +52,9 @@ public class Grid extends Observable {
     public Grid(int width, int height, int mines, Random random) {
 		this.random = random;
 		this.mines = mines;
-		location = new Location[width][height];
-		for(int i = 0; i < getWidth(); i++){
-			for(int j = 0; j < getHeight(); j++){
+		location = new Location[height][width];					//he is using 20 width and 30 height.
+		for(int i = 0; i < getHeight(); i++){
+			for(int j = 0; j < getWidth(); j++){
 				location[i][j] = new Location();				//Location class comes initialized to COVERED dont have to cover it
 			}
 		}
@@ -72,8 +72,8 @@ public class Grid extends Observable {
     public void reset() {										//THIS IS FAILING TEST DUE TO WRONG HINT IN LOCATION HAVE TO CHECK 3 METHODS
 		new Random();
 		location = new Location[getHeight()][getWidth()];
-		for(int i = 0; i < location.length; i++){
-			for(int j = 0; j < location[i].length; j++){
+		for(int i = 0; i < getHeight(); i++){
+			for(int j = 0; j < getWidth(); j++){
 				location[i][j] = new Location();		
 			}
 		}
@@ -88,8 +88,8 @@ public class Grid extends Observable {
     private void placeMines() {
 		int mineCount = 0;
 		while(mineCount < mines){						//While loop instead of for.
-			int x = random.nextInt(getWidth());
-			int y = random.nextInt(getHeight());
+			int x = random.nextInt(getHeight());
+			int y = random.nextInt(getWidth());
 			if(!(location[x][y].hasMine())){
 				location[x][y].setMine(true);
 				mineCount++;
@@ -102,8 +102,8 @@ public class Grid extends Observable {
      * adjacent mines.
      */
     private void placeHints() {
-		for(int i = 0; i < getWidth(); i++){
-			for(int j = 0; j < getHeight(); j++){
+		for(int i = 0; i < getHeight(); i++){
+			for(int j = 0; j < getWidth() ; j++){
 			List<Location>neighbors = getNeighbors(i,j);
 				location[i][j].setHint(calculateHint(neighbors));
 			}
@@ -152,7 +152,7 @@ public class Grid extends Observable {
      * @return whether (row, col) is a legal index
      */
     private boolean isLegalIndex(int row, int col) {
-        return ((row >= 0 && row < getWidth()) && (col >= 0 && col < getHeight()));
+        return ((row >= 0 && row < getHeight()) && (col >= 0 && col < getWidth()));
     }
     
     /**
@@ -173,11 +173,11 @@ public class Grid extends Observable {
     }
     
     public int getWidth() {
-        return location.length;
+        return location[0].length;
     }
     
     public int getHeight() {
-        return location[0].length;
+        return location.length;
     }
     
     public int getMines() {
@@ -203,7 +203,7 @@ public class Grid extends Observable {
      * @return the location at (row, col)
      */
     public Location getLocation(int row, int col) {
-        return location[col][row];		
+        return location[row][col];		
 	}
     
     /**
