@@ -369,7 +369,6 @@ public class Grid extends Observable {
      * @return whether the location at (row, col) is flagged
      */
     private boolean isFlagged(int row, int col) {
-		
         return false;
     }
 }
