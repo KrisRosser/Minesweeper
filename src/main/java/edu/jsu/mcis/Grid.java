@@ -30,13 +30,12 @@ public class Grid extends Observable {
     private Random random;
 
     public Grid() {
+	this(8,8,10);
     }
     
+    
     public Grid(int width, int height, int mines) {
-		this.mines = mines;
-		location = new Location[height][width];
-		
-		placeMines();
+		this(width, height, mines, new Random());
     }
     
     /**
@@ -52,19 +51,32 @@ public class Grid extends Observable {
      * @param random the pseudorandom number generator
      */
     public Grid(int width, int height, int mines, Random random) {
-		random = new Random();
+		this.random = random;
 		this.mines = mines;
 		location = new Location[height][width];
 		
 		for(int i = 0; i < height; i++){
-			for(int j = 0; j < width){
+			for(int j = 0; j < width; j++){
 				location[i][j] = new Location();
 			}
 		}
 		
 		placeMines();
 		placeHints();
+		
 	
+		/*
+		this.random = random;
+		this.mines = mines;
+		location = new Location[width][height];
+		for(int i = 0; i < getWidth(); i++){
+			for(int j = 0; j < getHeight(); j++){
+				location[i][j] = new Location();				//Location class comes initialized to COVERED dont have to cover it
+			}
+		}
+		placeMines();
+		placeHints();											//something is wrong with placeHints();
+		*/
     }
     
     /**
@@ -74,21 +86,41 @@ public class Grid extends Observable {
      * mines are in unique locations. Hints should be calculated after 
      * mines are placed.
      */
-    public void reset() {
-
-    }
+    public void reset() {										//THIS IS FAILING TEST DUE TO WRONG HINT IN LOCATION HAVE TO CHECK 3 METHODS
+		//new Random();
+		location = new Location[getHeight()][getWidth()];
+		for(int i = 0; i < location.length; i++){
+			for(int j = 0; j < location[i].length; j++){
+				location[i][j] = new Location();		
+			}
+		}
+		this.placeMines();
+		this.placeHints(); 
+	}
     
     /**
      * This method should place all mines randomly in unique 
      * locations.
      */
     private void placeMines() {
-		random = new Random();
-		while(mines >= 0){
+	/*	
+		//random = new Random();
+		while(mines > 0){
 			location[random.nextInt(getHeight())][random.nextInt(getWidth())].setMine(true);
 			mines--;
 		}
 		
+*/
+		int mineCount = 0;
+		while(mineCount < mines){						//While loop instead of for.
+			int y = random.nextInt(getWidth());
+			int x = random.nextInt(getHeight());
+			if(!(location[x][y].hasMine())){
+				location[x][y].setMine(true);
+				mineCount++;
+			} 
+		}
+
     }
     
     /**
@@ -96,7 +128,13 @@ public class Grid extends Observable {
      * adjacent mines.
      */
     private void placeHints() {
-
+		
+		for(int i = 0; i < getHeight(); i++){
+			for(int j = 0; j < getWidth(); j++){
+				List<Location> neighbors = getNeighbors(i,j);
+				location[i][j].setHint(calculateHint(neighbors));
+			}
+		}
     }
     
     /**
@@ -114,18 +152,29 @@ public class Grid extends Observable {
      */
     private List<Location> getNeighbors(int row, int col) {
         List<Location> neighbors = new ArrayList<>();
-		/*
-		if (row > 0)
-        neighbors.add({row-1, col});
-		if (col > 0)
-			neighbors.add(row, col-1);
-		if (row < getHeight())
-			neighbors.add(row+1, col);
-		if (row < getWidth())
-			neighbors.add(row, col+1);
-		*/
-        return neighbors;
-    }
+
+		
+    
+
+        //(row < 0 || row > location.length) || (col < 0 || col > location[0].length)
+		//if((row > 0 && row < location[0].length) && (col > 0 && col < location.length))
+		if(isLegalIndex(row, col)){
+			for(int i = -1; i < 2; i++){
+				for(int j = -1; j < 2; j++){
+					if(isLegalIndex(row+i, col+j)){			//(row+i >= 0 && row+i < location[0].length) && (col+j >= 0 && col+j < location.length)
+						if(row+i != row && col+j != col){
+							neighbors.add(location[row+i][col+j]);
+						}
+					}
+				}
+			}
+			return neighbors;
+		}
+		else{
+			return neighbors;
+		}
+	}
+
     
     /**
      * This method returns true if (row, col) is a legal index.
@@ -135,9 +184,13 @@ public class Grid extends Observable {
      * @return whether (row, col) is a legal index
      */
     private boolean isLegalIndex(int row, int col) {
+
 		//if(row < 0 || row > getHeight()) return false;
 		//else if(col < 0 || col > getWidth()) return false;
-        return ((row > 0 && row < getHeight()) && (col > 0 && col < getWidth()));
+        return ((row >= 0 && row < getHeight()) && (col >= 0 && col < getWidth()));
+
+        //return ((row >= 0 && row < getWidth()) && (col >= 0 && col < getHeight()));
+
     }
     
     /**
@@ -149,16 +202,29 @@ public class Grid extends Observable {
      */
     private int calculateHint(List<Location> neighbors) {
         int hint = 0;
+		for(int i=0; i < neighbors.size(); i++){			//had to read intstructions lol
+			if(neighbors.get(i).hasMine()){
+				hint++;
+			}
+		}
         return hint;
     }
     
     public int getWidth() {
+
         return location[0].length;
     }
     
     public int getHeight() {
         return location.length;
+
+        //return location.length;
     }
+    
+   // public int getHeight() {
+   //     return location[0].length;
+
+    //}
     
     public int getMines() {
         return mines;
@@ -172,7 +238,15 @@ public class Grid extends Observable {
      * @return the state of the Minesweeper game outcome
      */
     public Result getResult() {
-        return Result.NONE;
+		for(int i = 0; i < getHeight(); i++){
+			for(int j = 0; j < getWidth(); j++){
+				if((location[i][j].getType() == Location.Type.UNCOVERED) && (location[i][j].hasMine())) return Result.LOSE;
+				//else if(location[i][j].getType() == Location.Type.UNCOVERED) return Result.WIN;
+				//return Result.NONE;
+			}
+			
+		}
+		return Result.NONE;	
     }
     
     /**
@@ -183,8 +257,9 @@ public class Grid extends Observable {
      * @return the location at (row, col)
      */
     public Location getLocation(int row, int col) {
-		if(isLegalIndex(row, col) == true) return location[row][col];
-    }
+        return location[row][col];		
+	}
+
     
     /**
      * This method returns true if (row, col) is a legal index and
@@ -195,6 +270,8 @@ public class Grid extends Observable {
      * @return whether a flag is at (row, col)
      */
     public boolean isFlagAt(int row, int col) {
+		if((isLegalIndex(row,col) == true) && (location[row][col].getType() == Location.Type.FLAGGED)) 
+			return true;
         return false;
     }
     
@@ -209,6 +286,18 @@ public class Grid extends Observable {
      * @param col 
      */
     public void placeFlagAt(int row, int col) {
+		if(isCovered(row,col)) {
+			location[row][col].setType(Location.Type.FLAGGED);
+			String result = String.format("%d:%d:flag", row, col);
+			hasChanged();
+			setChanged();
+			notifyObservers(result);
+		}
+		else{
+			hasChanged();
+			setChanged();
+			notifyObservers("");
+		}
         
     }
     
@@ -223,6 +312,22 @@ public class Grid extends Observable {
      * @param col 
      */
     public void removeFlagAt(int row, int col) {
+		if(isFlagAt(row,col)) {
+			location[row][col].setType(Location.Type.COVERED);
+			
+			String result = String.format("%d:%d:unflag", row, col);
+			hasChanged();
+			setChanged();
+			notifyObservers(result);
+		}
+		else {
+			hasChanged();
+			setChanged();
+			notifyObservers("");
+		}
+			
+		
+		
 
     }
     
@@ -251,7 +356,9 @@ public class Grid extends Observable {
      * @return whether the location at (row, col) is covered
      */
     private boolean isCovered(int row, int col) {
-        return false;
+		if(isLegalIndex(row,col) && location[row][col].getType() == Location.Type.COVERED) 
+			return true;
+        else return false;
     }
     
     /**
@@ -262,6 +369,7 @@ public class Grid extends Observable {
      * @return whether the location at (row, col) is flagged
      */
     private boolean isFlagged(int row, int col) {
+		
         return false;
     }
 }

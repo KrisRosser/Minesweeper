@@ -25,10 +25,8 @@ public class Ticker extends JLabel implements ActionListener {
 		this.setName("ticker");
 		this.seconds = 0;
 		this.running = false;
-		timer = new Timer(1000, new ActionListener(){
-			@override
-			timer.actionPerformed();
-		}
+		timer = new Timer(1000, this);
+		setText(getTime());
     }
     
     /**
@@ -43,10 +41,7 @@ public class Ticker extends JLabel implements ActionListener {
      * This method stops the timer.
      */
     public void stop() {
-		int holder = this.seconds;
-		this.timer.cancel();
-		this();
-		this.seconds = holder;
+		this.timer.stop();
 		this.running = false;
     }
     
@@ -54,8 +49,10 @@ public class Ticker extends JLabel implements ActionListener {
      * This method stops the timer and resets the current time to 0.
      */
     public void reset() {
-		this.timer.cancel();
-		this();
+		this.timer.stop();
+		this.seconds = 0;
+		running = false;
+		setText(getTime());
     }
     
     public boolean isRunning() {
@@ -86,6 +83,6 @@ public class Ticker extends JLabel implements ActionListener {
      */
     public void actionPerformed(ActionEvent event) {
 		seconds++;
-		this.getTime();
+		setText(getTime());
     }
 }
