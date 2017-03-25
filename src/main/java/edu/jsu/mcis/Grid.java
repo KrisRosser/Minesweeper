@@ -104,7 +104,7 @@ public class Grid extends Observable {
     private void placeHints() {
 		for(int i = 0; i < getHeight(); i++){
 			for(int j = 0; j < getWidth() ; j++){
-			List<Location>neighbors = getNeighbors(i,j);
+			List<Location> neighbors = getNeighbors(i,j);
 				location[i][j].setHint(calculateHint(neighbors));
 			}
 		}
@@ -130,7 +130,7 @@ public class Grid extends Observable {
 		if(isLegalIndex(row, col)){
 			for(int i = -1; i < 2; i++){
 				for(int j = -1; j < 2; j++){
-					if(isLegalIndex(row+i, col+j)){			//(row+i >= 0 && row+i < location[0].length) && (col+j >= 0 && col+j < location.length)
+					if(isLegalIndex(row+i, col+j)){			
 						if(row+i != row && col+j != col){
 							neighbors.add(location[row+i][col+j]);
 						}
@@ -215,7 +215,7 @@ public class Grid extends Observable {
      * @return whether a flag is at (row, col)
      */
     public boolean isFlagAt(int row, int col) {
-        return false;
+        return (isLegalIndex(row, col) && isFlagged(row, col));
     }
     
     /**
@@ -229,7 +229,11 @@ public class Grid extends Observable {
      * @param col 
      */
     public void placeFlagAt(int row, int col) {
-        
+		if(isLegalIndex(row, col) && isCovered(row, col)){
+			getLocation(row, col).setType(Location.Type.FLAGGED);
+			setChanged();
+			notifyObservers(row + ":" + col + ":" + "flag");
+		}    
     }
     
     /**
@@ -243,7 +247,11 @@ public class Grid extends Observable {
      * @param col 
      */
     public void removeFlagAt(int row, int col) {
-
+		if(isLegalIndex(row, col) && isFlagged(row, col)){
+			location[row][col].setType(Location.Type.COVERED);
+			setChanged();
+			notifyObservers(row + ":" + col + ":" + "unflag");
+		}
     }
     
     /**
@@ -260,7 +268,34 @@ public class Grid extends Observable {
      * @param col 
      */
     public void uncoverAt(int row, int col) {
-
+		List<Location> neighbors = getNeighbors(row, col);
+		if(isLegalIndex(row, col) && isCovered(row, col)){
+			if(location[row][col].hasMine()){
+				location[row][col].setType(Location.Type.UNCOVERED);
+				setChanged();
+				notifyObservers(row + ":" + col + ":" + "mine");
+			}
+			else{
+				if(calculateHint(neighbors) == 0){
+					for(int i = -1; i < 2; i++){
+						for(int j = -1; j < 2; j++){
+							if(isLegalIndex(row+i, col+j)){			
+								if(row+i != row && col+j != col){
+									if(isCovered(row+i, col + j) && (!(location[row+i][col+j].hasMine()))){
+										uncoverAt(row+i, col+j);
+									}
+								}
+							}
+						}
+					}
+				}
+				else{
+					location[row][col].setType(Location.Type.UNCOVERED);
+					setChanged();
+					notifyObservers(row + ":" + col + ":" + calculateHint(neighbors));
+				}
+			}
+		}
     }
     
     /**
@@ -271,7 +306,7 @@ public class Grid extends Observable {
      * @return whether the location at (row, col) is covered
      */
     private boolean isCovered(int row, int col) {
-        return false;
+        return (getLocation(row, col).getType() == Location.Type.COVERED);
     }
     
     /**
@@ -282,6 +317,6 @@ public class Grid extends Observable {
      * @return whether the location at (row, col) is flagged
      */
     private boolean isFlagged(int row, int col) {
-        return false;
+        return (getLocation(row, col).getType() == Location.Type.FLAGGED);
     }
 }
