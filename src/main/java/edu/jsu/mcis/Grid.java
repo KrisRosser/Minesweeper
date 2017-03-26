@@ -30,9 +30,8 @@ public class Grid extends Observable {
     private Random random;
 
     public Grid() {
-	this(8,8,10);
-    }
-    
+		this(8,8,10);
+	}
     
     public Grid(int width, int height, int mines) {
 		this(width, height, mines, new Random());
@@ -53,30 +52,14 @@ public class Grid extends Observable {
     public Grid(int width, int height, int mines, Random random) {
 		this.random = random;
 		this.mines = mines;
-		location = new Location[height][width];
-		
-		for(int i = 0; i < height; i++){
-			for(int j = 0; j < width; j++){
-				location[i][j] = new Location();
-			}
-		}
-		
-		placeMines();
-		placeHints();
-		
-	
-		/*
-		this.random = random;
-		this.mines = mines;
-		location = new Location[width][height];
-		for(int i = 0; i < getWidth(); i++){
-			for(int j = 0; j < getHeight(); j++){
+		location = new Location[height][width];					//he is using 20 width and 30 height.
+		for(int i = 0; i < getHeight(); i++){
+			for(int j = 0; j < getWidth(); j++){
 				location[i][j] = new Location();				//Location class comes initialized to COVERED dont have to cover it
 			}
 		}
 		placeMines();
 		placeHints();											//something is wrong with placeHints();
-		*/
     }
     
     /**
@@ -87,10 +70,10 @@ public class Grid extends Observable {
      * mines are placed.
      */
     public void reset() {										//THIS IS FAILING TEST DUE TO WRONG HINT IN LOCATION HAVE TO CHECK 3 METHODS
-		//new Random();
+		new Random();
 		location = new Location[getHeight()][getWidth()];
-		for(int i = 0; i < location.length; i++){
-			for(int j = 0; j < location[i].length; j++){
+		for(int i = 0; i < getHeight(); i++){
+			for(int j = 0; j < getWidth(); j++){
 				location[i][j] = new Location();		
 			}
 		}
@@ -103,24 +86,15 @@ public class Grid extends Observable {
      * locations.
      */
     private void placeMines() {
-	/*	
-		//random = new Random();
-		while(mines > 0){
-			location[random.nextInt(getHeight())][random.nextInt(getWidth())].setMine(true);
-			mines--;
-		}
-		
-*/
 		int mineCount = 0;
 		while(mineCount < mines){						//While loop instead of for.
-			int y = random.nextInt(getWidth());
 			int x = random.nextInt(getHeight());
+			int y = random.nextInt(getWidth());
 			if(!(location[x][y].hasMine())){
 				location[x][y].setMine(true);
 				mineCount++;
 			} 
 		}
-
     }
     
     /**
@@ -128,10 +102,9 @@ public class Grid extends Observable {
      * adjacent mines.
      */
     private void placeHints() {
-		
 		for(int i = 0; i < getHeight(); i++){
-			for(int j = 0; j < getWidth(); j++){
-				List<Location> neighbors = getNeighbors(i,j);
+			for(int j = 0; j < getWidth() ; j++){
+			List<Location> neighbors = getNeighbors(i,j);
 				location[i][j].setHint(calculateHint(neighbors));
 			}
 		}
@@ -152,16 +125,12 @@ public class Grid extends Observable {
      */
     private List<Location> getNeighbors(int row, int col) {
         List<Location> neighbors = new ArrayList<>();
-
-		
-    
-
         //(row < 0 || row > location.length) || (col < 0 || col > location[0].length)
 		//if((row > 0 && row < location[0].length) && (col > 0 && col < location.length))
 		if(isLegalIndex(row, col)){
 			for(int i = -1; i < 2; i++){
 				for(int j = -1; j < 2; j++){
-					if(isLegalIndex(row+i, col+j)){			//(row+i >= 0 && row+i < location[0].length) && (col+j >= 0 && col+j < location.length)
+					if(isLegalIndex(row+i, col+j)){			
 						if(row+i != row && col+j != col){
 							neighbors.add(location[row+i][col+j]);
 						}
@@ -174,7 +143,6 @@ public class Grid extends Observable {
 			return neighbors;
 		}
 	}
-
     
     /**
      * This method returns true if (row, col) is a legal index.
@@ -184,13 +152,7 @@ public class Grid extends Observable {
      * @return whether (row, col) is a legal index
      */
     private boolean isLegalIndex(int row, int col) {
-
-		//if(row < 0 || row > getHeight()) return false;
-		//else if(col < 0 || col > getWidth()) return false;
         return ((row >= 0 && row < getHeight()) && (col >= 0 && col < getWidth()));
-
-        //return ((row >= 0 && row < getWidth()) && (col >= 0 && col < getHeight()));
-
     }
     
     /**
@@ -211,20 +173,12 @@ public class Grid extends Observable {
     }
     
     public int getWidth() {
-
         return location[0].length;
     }
     
     public int getHeight() {
         return location.length;
-
-        //return location.length;
     }
-    
-   // public int getHeight() {
-   //     return location[0].length;
-
-    //}
     
     public int getMines() {
         return mines;
@@ -238,15 +192,12 @@ public class Grid extends Observable {
      * @return the state of the Minesweeper game outcome
      */
     public Result getResult() {
-		for(int i = 0; i < getHeight(); i++){
+        for(int i = 0; i < getHeight(); i++){
 			for(int j = 0; j < getWidth(); j++){
 				if((location[i][j].getType() == Location.Type.UNCOVERED) && (location[i][j].hasMine())) return Result.LOSE;
-				//else if(location[i][j].getType() == Location.Type.UNCOVERED) return Result.WIN;
-				//return Result.NONE;
 			}
-			
 		}
-		return Result.NONE;	
+		return Result.NONE;
     }
     
     /**
@@ -259,7 +210,6 @@ public class Grid extends Observable {
     public Location getLocation(int row, int col) {
         return location[row][col];		
 	}
-
     
     /**
      * This method returns true if (row, col) is a legal index and
@@ -270,9 +220,7 @@ public class Grid extends Observable {
      * @return whether a flag is at (row, col)
      */
     public boolean isFlagAt(int row, int col) {
-		if((isLegalIndex(row,col) == true) && (location[row][col].getType() == Location.Type.FLAGGED)) 
-			return true;
-        return false;
+        return (isLegalIndex(row, col) && isFlagged(row, col));			//NO NEED FOR "ELSE RETURN FALSE", it is already going to return false if wrong.
     }
     
     /**
@@ -286,19 +234,11 @@ public class Grid extends Observable {
      * @param col 
      */
     public void placeFlagAt(int row, int col) {
-		if(isCovered(row,col)) {
-			location[row][col].setType(Location.Type.FLAGGED);
-			String result = String.format("%d:%d:flag", row, col);
-			hasChanged();
+		if(isLegalIndex(row, col) && isCovered(row, col)){
+			getLocation(row, col).setType(Location.Type.FLAGGED);
 			setChanged();
-			notifyObservers(result);
-		}
-		else{
-			hasChanged();
-			setChanged();
-			notifyObservers("");
-		}
-        
+			notifyObservers(row + ":" + col + ":" + "flag");
+		}    
     }
     
     /**
@@ -312,23 +252,11 @@ public class Grid extends Observable {
      * @param col 
      */
     public void removeFlagAt(int row, int col) {
-		if(isFlagAt(row,col)) {
+		if(isLegalIndex(row, col) && isFlagged(row, col)){
 			location[row][col].setType(Location.Type.COVERED);
-			
-			String result = String.format("%d:%d:unflag", row, col);
-			hasChanged();
 			setChanged();
-			notifyObservers(result);
+			notifyObservers(row + ":" + col + ":" + "unflag");
 		}
-		else {
-			hasChanged();
-			setChanged();
-			notifyObservers("");
-		}
-			
-		
-		
-
     }
     
     /**
@@ -345,7 +273,34 @@ public class Grid extends Observable {
      * @param col 
      */
     public void uncoverAt(int row, int col) {
-
+		List<Location> neighbors = getNeighbors(row, col);
+		if(isLegalIndex(row, col) && isCovered(row, col)){
+			if(location[row][col].hasMine()){
+				location[row][col].setType(Location.Type.UNCOVERED);
+				setChanged();
+				notifyObservers(row + ":" + col + ":" + "mine");
+			}
+			else{
+				if(calculateHint(neighbors) == 0){
+					for(int i = -1; i < 2; i++){
+						for(int j = -1; j < 2; j++){
+							if(isLegalIndex(row+i, col+j)){			
+								if(row+i != row && col+j != col){
+									if(isCovered(row+i, col + j) && (!(location[row+i][col+j].hasMine()))){
+										uncoverAt(row+i, col+j);
+									}
+								}
+							}
+						}
+					}
+				}
+				else{
+					location[row][col].setType(Location.Type.UNCOVERED);
+					setChanged();
+					notifyObservers(row + ":" + col + ":" + calculateHint(neighbors));
+				}
+			}
+		}
     }
     
     /**
@@ -356,9 +311,7 @@ public class Grid extends Observable {
      * @return whether the location at (row, col) is covered
      */
     private boolean isCovered(int row, int col) {
-		if(isLegalIndex(row,col) && location[row][col].getType() == Location.Type.COVERED) 
-			return true;
-        else return false;
+        return (getLocation(row, col).getType() == Location.Type.COVERED);
     }
     
     /**
@@ -369,6 +322,6 @@ public class Grid extends Observable {
      * @return whether the location at (row, col) is flagged
      */
     private boolean isFlagged(int row, int col) {
-        return false;
+        return (getLocation(row, col).getType() == Location.Type.FLAGGED);
     }
 }
