@@ -280,19 +280,21 @@ public class Grid extends Observable {
 				notifyObservers(row + ":" + col + ":" + "mine");
 				getResult();
 			}
-			List<Location> neighbors = getNeighbors(row, col);
-			setChanged();
-			notifyObservers(row + ":" + col + ":" + calculateHint(neighbors));
-			if(calculateHint(neighbors) == 0){
-				for(int i = 0; i < offsets.length; i++) {
-					int r = row + offsets[i][0];
-					int c = col + offsets[i][1];
-					if(isLegalIndex(r, c) && isCovered(r, c) && (!(location[r][c].hasMine()))){
-						uncoverAt(r, c);
+			else{
+				List<Location> neighbors = getNeighbors(row, col);
+				setChanged();
+				notifyObservers(row + ":" + col + ":" + calculateHint(neighbors));
+				if(calculateHint(neighbors) == 0){
+					for(int i = 0; i < offsets.length; i++) {
+						int r = row + offsets[i][0];
+						int c = col + offsets[i][1];
+						if(isLegalIndex(r, c) && isCovered(r, c) && (!(location[r][c].hasMine()))){
+							uncoverAt(r, c);
+						}
 					}
 				}
+				getResult();
 			}
-			getResult();
 		}	
 		
     }
