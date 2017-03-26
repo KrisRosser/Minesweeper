@@ -6,6 +6,10 @@ import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
+        Grid g = new Grid();
+        System.out.println(g);
+        
+        /*
         Minesweeper board = null;
         if(args.length == 0) {
             board = new Minesweeper();
@@ -25,6 +29,7 @@ public class Main {
             win.pack();
             win.setVisible(true);
         }
+        */
     }
 }
 

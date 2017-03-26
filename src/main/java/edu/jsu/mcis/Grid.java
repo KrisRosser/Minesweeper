@@ -58,8 +58,7 @@ public class Grid extends Observable {
 				location[i][j] = new Location();				//Location class comes initialized to COVERED dont have to cover it
 			}
 		}
-		placeMines();
-		placeHints();											
+		reset();
     }
     
     /**
@@ -70,15 +69,15 @@ public class Grid extends Observable {
      * mines are placed.
      */
     public void reset() {										//THIS IS FAILING TEST DUE TO WRONG HINT IN LOCATION,CHECKHINT ALGORYTHMS
-		new Random();
-		location = new Location[getHeight()][getWidth()];
 		for(int i = 0; i < getHeight(); i++){
 			for(int j = 0; j < getWidth(); j++){
-				location[i][j] = new Location();		
+				location[i][j].setType(Location.Type.COVERED);
+				location[i][j].setMine(false);
+				location[i][j].setHint(0);
 			}
 		}
-		this.placeMines();
-		this.placeHints(); 
+		placeMines();
+		placeHints(); 
 	}
     
     /**
@@ -104,7 +103,7 @@ public class Grid extends Observable {
     private void placeHints() {
 		for(int i = 0; i < getHeight(); i++){
 			for(int j = 0; j < getWidth() ; j++){
-			List<Location> neighbors = getNeighbors(i,j);
+				List<Location> neighbors = getNeighbors(i, j);
 				location[i][j].setHint(calculateHint(neighbors));
 			}
 		}
@@ -126,20 +125,19 @@ public class Grid extends Observable {
     private List<Location> getNeighbors(int row, int col) {
         List<Location> neighbors = new ArrayList<>();
         if(isLegalIndex(row, col)){
-			for(int i = -1; i < 2; i++){
-				for(int j = -1; j < 2; j++){
-					if(isLegalIndex(row+i, col+j)){			
-						if(row+i != row && col+j != col){
-							neighbors.add(location[row+i][col+j]);
+			for(int i = -1; i <= 1; i++){
+				for(int j = -1; j <= 1; j++){
+					int r = row + i;
+					int c = col + j;
+					if(isLegalIndex(r, c)){			
+						if(r != row || c != col){
+							neighbors.add(location[r][c]);
 						}
 					}
 				}
 			}
-			return neighbors;
-		}
-		else{
-			return neighbors;
-		}
+        }
+		return neighbors;
 	}
     
     /**
@@ -328,5 +326,17 @@ public class Grid extends Observable {
      */
     private boolean isFlagged(int row, int col) {
         return (getLocation(row, col).getType() == Location.Type.FLAGGED);
+    }
+    
+    public String toString() {
+    	String s = "";
+    	for(int i = 0; i < getHeight(); i++) {
+    		for(int j = 0; j < getWidth(); j++) {
+    			if(location[i][j].hasMine()) s += "9";
+    			else s += location[i][j].getHint();
+    		}
+    		s += "\n";
+    	}
+    	return s;
     }
 }
