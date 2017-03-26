@@ -284,8 +284,10 @@ public class Grid extends Observable {
 				if(calculateHint(neighbors) == 0){
 					for(int i = -1; i < 2; i++){
 						for(int j = -1; j < 2; j++){
-							if(isLegalIndex(row+i, col+j)){			
-								if(row+i != row && col+j != col){
+							int r = row + i;
+							int c = col + j;
+							if(isLegalIndex(r, c)){			
+								if(r != row || c != col){
 									if(isCovered(row+i, col + j) && (!(location[row+i][col+j].hasMine()))){
 										location[row][col].setType(Location.Type.UNCOVERED);
 										getResult();
