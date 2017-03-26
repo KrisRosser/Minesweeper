@@ -272,10 +272,11 @@ public class Grid extends Observable {
      * @param col 
      */
     public void uncoverAt(int row, int col) {
-		int[][] offsets = {{-1, 0}, {-1, 1}, {0, 1}, {1, 1},{1, 0}, {1, -1}, {0, -1}, {-1, -1}};
-		if(isLegalIndex(row, col) && isCovered(row, col)){
+		int[][] offsets = {{-1, 0}, {-1, 1}, {0, 1}, {1, 1},{1, 0}, {1, -1}, {0, -1}, {-1, -1}};	
+		if(isLegalIndex(row, col) && isCovered(row, col)){										
 			location[row][col].setType(Location.Type.UNCOVERED);
 			if(location[row][col].hasMine()){
+				location[row][col].setType(Location.Type.UNCOVERED);
 				setChanged();
 				notifyObservers(row + ":" + col + ":" + "mine");
 				getResult();
