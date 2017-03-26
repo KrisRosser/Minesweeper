@@ -272,40 +272,29 @@ public class Grid extends Observable {
      * @param col 
      */
     public void uncoverAt(int row, int col) {
-		List<Location> neighbors = getNeighbors(row, col);			//forgot to call getResult()
+		int[][] offsets = {{-1, 0}, {-1, 1}, {0, 1}, {1, 1},{1, 0}, {1, -1}, {0, -1}, {-1, -1}};
 		if(isLegalIndex(row, col) && isCovered(row, col)){
+			location[row][col].setType(Location.Type.UNCOVERED);
 			if(location[row][col].hasMine()){
-				location[row][col].setType(Location.Type.UNCOVERED);
 				setChanged();
 				notifyObservers(row + ":" + col + ":" + "mine");
 				getResult();
 			}
-			else{
-				if(calculateHint(neighbors) == 0){
-					for(int i = -1; i < 2; i++){
-						for(int j = -1; j < 2; j++){
-							int r = row + i;
-							int c = col + j;
-							if(isLegalIndex(r, c)){			
-								if(r != row || c != col){
-									if(isCovered(row+i, col + j) && (!(location[row+i][col+j].hasMine()))){
-										location[row][col].setType(Location.Type.UNCOVERED);
-										getResult();
-										uncoverAt(row+i, col+j);
-									}
-								}
-							}
-						}
+			List<Location> neighbors = getNeighbors(row, col);
+			setChanged();
+			notifyObservers(row + ":" + col + ":" + calculateHint(neighbors));
+			if(calculateHint(neighbors) == 0){
+				for(int i = 0; i < offsets.length; i++) {
+					int r = row + offsets[i][0];
+					int c = col + offsets[i][1];
+					if(isLegalIndex(r, c) && isCovered(r, c) && (!(location[r][c].hasMine()))){
+						uncoverAt(r, c);
 					}
 				}
-				else{
-					location[row][col].setType(Location.Type.UNCOVERED);
-					setChanged();
-					notifyObservers(row + ":" + col + ":" + calculateHint(neighbors));
-					getResult();
-				}
 			}
-		}
+			getResult();
+		}	
+		
     }
     
     /**
