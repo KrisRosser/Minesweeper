@@ -52,14 +52,14 @@ public class Grid extends Observable {
     public Grid(int width, int height, int mines, Random random) {
 		this.random = random;
 		this.mines = mines;
-		location = new Location[height][width];					//he is using 20 width and 30 height.
+		location = new Location[height][width];					
 		for(int i = 0; i < getHeight(); i++){
 			for(int j = 0; j < getWidth(); j++){
 				location[i][j] = new Location();				//Location class comes initialized to COVERED dont have to cover it
 			}
 		}
 		placeMines();
-		placeHints();											//something is wrong with placeHints();
+		placeHints();											
     }
     
     /**
@@ -69,7 +69,7 @@ public class Grid extends Observable {
      * mines are in unique locations. Hints should be calculated after 
      * mines are placed.
      */
-    public void reset() {										//THIS IS FAILING TEST DUE TO WRONG HINT IN LOCATION HAVE TO CHECK 3 METHODS
+    public void reset() {										//THIS IS FAILING TEST DUE TO WRONG HINT IN LOCATION,CHECKHINT ALGORYTHMS
 		new Random();
 		location = new Location[getHeight()][getWidth()];
 		for(int i = 0; i < getHeight(); i++){
@@ -125,9 +125,7 @@ public class Grid extends Observable {
      */
     private List<Location> getNeighbors(int row, int col) {
         List<Location> neighbors = new ArrayList<>();
-        //(row < 0 || row > location.length) || (col < 0 || col > location[0].length)
-		//if((row > 0 && row < location[0].length) && (col > 0 && col < location.length))
-		if(isLegalIndex(row, col)){
+        if(isLegalIndex(row, col)){
 			for(int i = -1; i < 2; i++){
 				for(int j = -1; j < 2; j++){
 					if(isLegalIndex(row+i, col+j)){			
@@ -164,7 +162,7 @@ public class Grid extends Observable {
      */
     private int calculateHint(List<Location> neighbors) {
         int hint = 0;
-		for(int i=0; i < neighbors.size(); i++){			//had to read intstructions lol
+		for(int i=0; i < neighbors.size(); i++){			//had to read instructions lol
 			if(neighbors.get(i).hasMine()){
 				hint++;
 			}
@@ -192,12 +190,15 @@ public class Grid extends Observable {
      * @return the state of the Minesweeper game outcome
      */
     public Result getResult() {
-        for(int i = 0; i < getHeight(); i++){
+        long unCoveredCount = 0;
+		for(int i = 0; i < getHeight(); i++){
 			for(int j = 0; j < getWidth(); j++){
 				if((location[i][j].getType() == Location.Type.UNCOVERED) && (location[i][j].hasMine())) return Result.LOSE;
+				if((location[i][j].getType() == Location.Type.UNCOVERED) && (!(location[i][j].hasMine()))) unCoveredCount++;
 			}
 		}
-		return Result.NONE;
+		if((unCoveredCount + getMines()) == (getHeight() * getWidth())) return Result.WIN;  
+		else return Result.NONE;
     }
     
     /**
@@ -237,7 +238,7 @@ public class Grid extends Observable {
 		if(isLegalIndex(row, col) && isCovered(row, col)){
 			getLocation(row, col).setType(Location.Type.FLAGGED);
 			setChanged();
-			notifyObservers(row + ":" + col + ":" + "flag");
+			notifyObservers(row + ":" + col + ":" + "flag");			//GrisTest is looking for assertEquals("6:2:flag", observer.getMessage())
 		}    
     }
     
@@ -273,12 +274,13 @@ public class Grid extends Observable {
      * @param col 
      */
     public void uncoverAt(int row, int col) {
-		List<Location> neighbors = getNeighbors(row, col);
+		List<Location> neighbors = getNeighbors(row, col);			//forgot to call getResult()
 		if(isLegalIndex(row, col) && isCovered(row, col)){
 			if(location[row][col].hasMine()){
 				location[row][col].setType(Location.Type.UNCOVERED);
 				setChanged();
 				notifyObservers(row + ":" + col + ":" + "mine");
+				getResult();
 			}
 			else{
 				if(calculateHint(neighbors) == 0){
@@ -287,6 +289,8 @@ public class Grid extends Observable {
 							if(isLegalIndex(row+i, col+j)){			
 								if(row+i != row && col+j != col){
 									if(isCovered(row+i, col + j) && (!(location[row+i][col+j].hasMine()))){
+										location[row][col].setType(Location.Type.UNCOVERED);
+										getResult();
 										uncoverAt(row+i, col+j);
 									}
 								}
@@ -298,6 +302,7 @@ public class Grid extends Observable {
 					location[row][col].setType(Location.Type.UNCOVERED);
 					setChanged();
 					notifyObservers(row + ":" + col + ":" + calculateHint(neighbors));
+					getResult();
 				}
 			}
 		}
