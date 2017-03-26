@@ -281,10 +281,9 @@ public class Grid extends Observable {
 				getResult();
 			}
 			else{
-				List<Location> neighbors = getNeighbors(row, col);
 				setChanged();
-				notifyObservers(row + ":" + col + ":" + calculateHint(neighbors));
-				if(calculateHint(neighbors) == 0){
+				notifyObservers(row + ":" + col + ":" + location[row][col].getHint());
+				if(location[row][col].getHint() == 0){
 					for(int i = 0; i < offsets.length; i++) {
 						int r = row + offsets[i][0];
 						int c = col + offsets[i][1];
