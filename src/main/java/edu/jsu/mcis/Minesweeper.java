@@ -42,7 +42,7 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
      * This constructor should create a new 8-by-8 board with 10 mines.
      */
     public Minesweeper() {
-
+		this(8,8,10);
     }
     
     /**
@@ -90,6 +90,35 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
      * @param mines 
      */
     public Minesweeper(int width, int height, int mines) {
+		grid = new Grid(width, height, mines);
+		tile = new JLabel[height][width];
+		
+		for(int i = 0; i < height; i++){
+			for(int j = 0; j < width; j++){
+				tile[i][j] = new JLabel();
+				tile[i][j].setPreferredSize(new Dimension(50, 50));
+				tile[i][j].setHorizontalAlignment(JLabel.CENTER);
+				tile[i][j].setName("cell:" + i + ":" + j); 
+				tile[i][j].setBorder(BorderFactory.createRaisedBevelBorder());
+				tile[i][j].addMouseListener(this);
+				add(tile[i][j]);
+			}
+		}
+		flags = mines;
+		enabled = true;
+		
+		//Add the flag label with the number of flags
+		flagLabel = new JLabel();
+		flagLabel.setText(String.valueOf(flags));
+		flagLabel.setName("flags");
+		add(flagLabel);
+		
+		ticker = new Ticker();
+		ticker.setName("ticker");
+		add(ticker);
+		
+		
+		
 
     }
     
@@ -118,6 +147,7 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
      * @param event the clicking mouse event
      */
     public void mouseClicked(MouseEvent event) {
+	
 
     }   
     
@@ -132,7 +162,18 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
      * @return the point (x is row, y is column) of the label
      */
     private Point findSourceIndex(MouseEvent event) {
-        return null;
+		JLabel label = (JLabel)event.getSource();
+		Point p = new Point(0, 0);
+		for(int i = 0; i < tile.length; i++){
+			for(int j = 0; j < tile[0].length; j++){
+				if(tile[i][j] == label){
+					p.x = i;
+					p.y = j;
+				}
+			}
+		}
+		return p;
+        
     }
     
     
