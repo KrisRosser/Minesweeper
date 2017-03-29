@@ -93,17 +93,17 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
 		grid = new Grid(width, height, mines);
 		grid.addObserver(this);
 		tile = new JLabel[height][width];
-		Jpanel panel = new JPanel();
+		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(1,5));
-		panel.add(new JLabel("Flags"));
+		panel.add(new JLabel("flags"));
 		flags = mines;
 		JLabel flagLabel = new JLabel(""+flags);
 		panel.add(flagLabel);
-		flagLabel.setName("Flags");
+		flagLabel.setName("flags");
 		ticker = new Ticker();
 		panel.add(ticker);
 		ticker.setName("ticker");
-		Jpanel gridPanel = new JPanel();
+		JPanel gridPanel = new JPanel();
 		gridPanel.setLayout(new GridLayout(height, width));
 				
 		for(int i = 0; i < height; i++){
@@ -113,8 +113,9 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
 				tile[i][j].setHorizontalAlignment(0);
 				tile[i][j].setName("cell:" + i + ":" + j); 
 				tile[i][j].setBorder(BorderFactory.createRaisedBevelBorder());
-				tile[i][j].addMouseListener(this);
 				add(tile[i][j]);
+				tile[i][j].addMouseListener(this);
+				gridPanel.add(tile[i][j]);
 			}
 		}
 		enabled = true;
@@ -149,7 +150,7 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
      * @param arg (the message, which is actually a String)
      */
     public void update(Observable o, Object arg) {
-		String s = (String arg);
+		String s = (String)arg;
 		Scanner scanner = new Scanner(s);
 		scanner.useDelimiter(":");
 		int row = scanner.nextInt();
@@ -215,7 +216,7 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
 			scanner.useDelimiter(":");
 			scanner.next();
 			p.x = scanner.nextInt();
-			p.y = scanner.nexInt();
+			p.y = scanner.nextInt();
 		}
 		return p;
         
