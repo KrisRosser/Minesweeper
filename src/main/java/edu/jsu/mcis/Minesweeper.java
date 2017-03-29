@@ -91,31 +91,44 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
      */
     public Minesweeper(int width, int height, int mines) {
 		grid = new Grid(width, height, mines);
+		grid.addObserver(this);
 		tile = new JLabel[height][width];
-		
+		Jpanel panel = new JPanel();
+		panel.setLayout(new GridLayout(1,5));
+		panel.add(new JLabel("Flags"));
+		flags = mines;
+		JLabel flagLabel = new JLabel(""+flags);
+		panel.add(flagLabel);
+		flagLabel.setName("Flags");
+		ticker = new Ticker();
+		panel.add(ticker);
+		ticker.setName("ticker");
+		Jpanel gridPanel = new JPanel();
+		gridPanel.setLayout(new GridLayout(height, width));
+				
 		for(int i = 0; i < height; i++){
 			for(int j = 0; j < width; j++){
 				tile[i][j] = new JLabel();
 				tile[i][j].setPreferredSize(new Dimension(50, 50));
-				tile[i][j].setHorizontalAlignment(JLabel.CENTER);
+				tile[i][j].setHorizontalAlignment(0);
 				tile[i][j].setName("cell:" + i + ":" + j); 
 				tile[i][j].setBorder(BorderFactory.createRaisedBevelBorder());
 				tile[i][j].addMouseListener(this);
 				add(tile[i][j]);
 			}
 		}
-		flags = mines;
 		enabled = true;
-		
+		setLayout(new BorderLayout());
+		add(panel, BorderLayout.NORTH);
+		add(gridPanel, BorderLayout.CENTER);
+		enabled = true;
 		//Add the flag label with the number of flags
-		flagLabel = new JLabel();
-		flagLabel.setText(String.valueOf(flags));
-		flagLabel.setName("flags");
-		add(flagLabel);
+		//flagLabel = new JLabel();
+		//flagLabel.setText(String.valueOf(flags));
+		//flagLabel.setName("flags");
+		//add(flagLabel);
 		
-		ticker = new Ticker();
-		ticker.setName("ticker");
-		add(ticker);
+		
 		
 		
 		
@@ -136,7 +149,26 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
      * @param arg (the message, which is actually a String)
      */
     public void update(Observable o, Object arg) {
-
+		String s = (String arg);
+		Scanner scanner = new Scanner(s);
+		scanner.useDelimiter(":");
+		int row = scanner.nextInt();
+		int col = scanner.nextInt();
+		String info = scanner.next();
+		
+		if(info.equals("flag")) {
+			tile[row][col].setText("F");
+		}
+		else if(info.equals("unflag")) {
+			tile[row][col].setText("");
+		}
+		else if(info.equals("mine")) {
+			tile[row][col].setText("M");
+		}
+		else {
+			tile[row][col].setText(info);
+		}
+		
     }
     
     /**
@@ -147,7 +179,20 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
      * @param event the clicking mouse event
      */
     public void mouseClicked(MouseEvent event) {
-	
+		if(!ticker.isRunning()){
+			ticker.start();
+		}
+		Point point = findSourceIndex(event);
+		if(event.getButton() == MouseEvent.BUTTON1){	
+			grid.uncoverAt(point.x, point.y);
+		}	
+		else if(event.getButton() == MouseEvent.BUTTON3){
+			grid.placeFlagAt(point.x, point.y);
+		}	
+		Grid.Result result = grid.getResult();
+		/*if(result == WHATEVER){
+			
+		}*/
 
     }   
     
@@ -162,15 +207,15 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
      * @return the point (x is row, y is column) of the label
      */
     private Point findSourceIndex(MouseEvent event) {
-		JLabel label = (JLabel)event.getSource();
-		Point p = new Point(0, 0);
-		for(int i = 0; i < tile.length; i++){
-			for(int j = 0; j < tile[0].length; j++){
-				if(tile[i][j] == label){
-					p.x = i;
-					p.y = j;
-				}
-			}
+		Point p = new Point(-1, -1);
+		Component c = (Component)event.getSource();
+		if(c.getName().startsWith("cell")){
+			String s = c.getName();
+			Scanner scanner = new Scanner(s);
+			scanner.useDelimiter(":");
+			scanner.next();
+			p.x = scanner.nextInt();
+			p.y = scanner.nexInt();
 		}
 		return p;
         
