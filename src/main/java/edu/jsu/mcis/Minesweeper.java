@@ -97,7 +97,7 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
 		panel.setLayout(new GridLayout(1,5));
 		panel.add(new JLabel("flags"));
 		flags = mines;
-		JLabel flagLabel = new JLabel(""+flags);
+		flagLabel = new JLabel(""+flags);
 		panel.add(flagLabel);
 		flagLabel.setName("flags");
 		ticker = new Ticker();
@@ -158,10 +158,12 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
 		String info = scanner.next();
 		
 		if(info.equals("flag")) {
+			tile[row][col].setToolTipText("flagged");
 			tile[row][col].setIcon(FLAG_ICON);
 			this.flagLabel.setText(""+flags);
 		}
 		else if(info.equals("unflag")) {
+			tile[row][col].setToolTipText("uncovered");
 			tile[row][col].setIcon(null);
 			this.flagLabel.setText(""+flags);
 		}
@@ -169,8 +171,10 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
 			tile[row][col].setIcon(MINE_ICON);
 		}
 		else {
+			tile[row][col].setToolTipText("covered");
 			tile[row][col].setText(info);
 		}
+		tile[row][col].repaint();
 		
     }
     
@@ -192,20 +196,21 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
 		else if(event.getButton() == MouseEvent.BUTTON3){
 			if(grid.isFlagAt(point.x, point.y)){
 				grid.removeFlagAt(point.x, point.y);
-				flags++;
+				this.flags++;
 			}
 			else {
 				grid.placeFlagAt(point.x, point.y);
-				flags--;
+				this.flags--;
 			}
 		}	
 		Grid.Result result = grid.getResult();
 		if(result == Grid.Result.WIN){
-			grid.reset();
+			
 			enabled = false;
+			
 		}
 		else if(result == Grid.Result.LOSE){
-			grid.reset();
+			
 			enabled = false;
 		}
 		else{}
