@@ -205,15 +205,17 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
 		}	
 		Grid.Result result = grid.getResult();
 		if(result == Grid.Result.WIN){
-			
+			JOptionPane pane = new JOptionPane();
+			JOptionPane.showMessageDialog(null, "You Win");
 			enabled = false;
 			
 		}
-		else if(result == Grid.Result.LOSE){
-			
+		if(result == Grid.Result.LOSE){
+			JOptionPane pane = new JOptionPane();
+			JOptionPane.showMessageDialog(null, "You Lose");
 			enabled = false;
 		}
-		else{}
+		
 
     }   
     
