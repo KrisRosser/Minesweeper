@@ -159,9 +159,11 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
 		
 		if(info.equals("flag")) {
 			tile[row][col].setIcon(FLAG_ICON);
+			this.flagLabel.setText(""+flags);
 		}
 		else if(info.equals("unflag")) {
 			tile[row][col].setIcon(null);
+			this.flagLabel.setText(""+flags);
 		}
 		else if(info.equals("mine")) {
 			tile[row][col].setIcon(MINE_ICON);
@@ -200,9 +202,11 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
 		Grid.Result result = grid.getResult();
 		if(result == Grid.Result.WIN){
 			grid.reset();
+			enabled = false;
 		}
 		else if(result == Grid.Result.LOSE){
 			grid.reset();
+			enabled = false;
 		}
 		else{}
 
