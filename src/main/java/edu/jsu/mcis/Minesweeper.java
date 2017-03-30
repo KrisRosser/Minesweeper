@@ -158,13 +158,13 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
 		String info = scanner.next();
 		
 		if(info.equals("flag")) {
-			tile[row][col].setText("F");
+			tile[row][col].setIcon(FLAG_ICON);
 		}
 		else if(info.equals("unflag")) {
-			tile[row][col].setText("");
+			tile[row][col].setIcon(null);
 		}
 		else if(info.equals("mine")) {
-			tile[row][col].setText("M");
+			tile[row][col].setIcon(MINE_ICON);
 		}
 		else {
 			tile[row][col].setText(info);
@@ -188,12 +188,23 @@ public class Minesweeper extends JPanel implements MouseListener, Observer {
 			grid.uncoverAt(point.x, point.y);
 		}	
 		else if(event.getButton() == MouseEvent.BUTTON3){
-			grid.placeFlagAt(point.x, point.y);
+			if(grid.isFlagAt(point.x, point.y)){
+				grid.removeFlagAt(point.x, point.y);
+				flags++;
+			}
+			else {
+				grid.placeFlagAt(point.x, point.y);
+				flags--;
+			}
 		}	
 		Grid.Result result = grid.getResult();
-		/*if(result == WHATEVER){
-			
-		}*/
+		if(result == Grid.Result.WIN){
+			grid.reset();
+		}
+		else if(result == Grid.Result.LOSE){
+			grid.reset();
+		}
+		else{}
 
     }   
     
