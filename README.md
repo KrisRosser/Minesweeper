@@ -1,6 +1,4 @@
-# Minesweeper
-
-## Introduction
+# Project Title
 
 In the game Minesweeper, the goal is to find where all the mines are 
 located within an M x N field. The game shows a number in a square, 
@@ -15,25 +13,61 @@ up with the field on the right:
     . # . .         1 # 1 0
     . . . .         1 1 1 0
 
-## Assignment
+## Getting Started
 
-In this assignment, you are to implement a playable version of 
-Minesweeper in Java. The application must be customizable (using 
-command-line arguments) so that various sizes (width and height) of 
-the board can be played, along with various numbers of mines. The 
-default game should be an 8 x 8 board with 10 mines. The interface
-should have a button for starting a new game, a label that keeps up 
-with the number of flags that are left for marking mines, and a label 
-that ticks up as the seconds pass once a game begins. (A game should 
-be considered to have begun once the player clicks his or her first 
-square.)
+### Prerequisites
 
-The grid of locations should be left-clickable to reveal what is 
-underneath (number or mine) and right-clickable to place a flag 
-without revealing what is underneath. Left-clicking or right-clicking 
-an already revealed location does nothing. Left-clicking a flagged 
-does nothing. Right-clicking a flagged location just resets that flag 
-into the player's pool. Once the player has revealed the entire board 
-without triggering a mine, a popup window should state that he or she 
-is the winner and report the elapsed time. If a mine is triggered, a 
-popup window should be displayed that says that the game is over. 
+What things you need to install the software and how to install them
+
+Winzip, 7zip, File Explorer, etc.
+
+You will need Java Runtime Environment version 7 or higher.
+
+Java is the programming language for this software.
+
+For easy development and debugging this software was designed with Gradle Software Development Build Tool.
+
+Gradle is not technically necessary, but is recommended. https://gradle.org/
+
+### Installing
+
+Download or clone this repository to a folder of your choice.
+
+I would recommend including a .gitignore file for convienience.
+
+This project is designed to be used in conjunction with Gradle Software Develoment Tool.
+
+Once in all files are situated, simple use gradle run or gradle runrobot to play and/or test the program.
+
+## Running the tests
+
+Using the command "gradle build" will compile all the files and run all the acceptance tests for you.
+
+Using the command "gradle run" will perform the Gradle build and then run the program.
+
+Using the command "gradle runrobot" will perform the Gradle build and the have a robot play a quick game for further acceptance testing.
+
+### Break down into end to end tests
+
+This software comes with a battery of unit tests included.
+
+These tests cover functionality of all the files, methods, and algorithms used.
+
+```
+build\reports\tests\test\index.html will provide you with a complete and easy to read breakdown of all tests.
+```
+
+## Built With
+
+* [Gradle Software Develpment Tool] https://gradle.org/
+
+## Authors
+
+* **Framework designed by Dr. Aaron Garrett** 
+
+The students who worked on this project were Kristofer Rosser and Earl
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
